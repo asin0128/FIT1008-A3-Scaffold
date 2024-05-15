@@ -28,7 +28,7 @@ class Mode1Navigator:
         for land in sorted_lands:
             if remaining_adventurers <= 0:
                 break
-
+            
             if land.guardians == 0:
                 # If there are no guardians, we can collect all gold without sending adventurers
                 selected_sites.append((land, 0))
