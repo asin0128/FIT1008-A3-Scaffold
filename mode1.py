@@ -1,5 +1,6 @@
 from landsites import Land
-
+from data_structures.heap import MaxHeap
+from typing import List, Tuple
 
 class Mode1Navigator:
     """
@@ -18,32 +19,28 @@ class Mode1Navigator:
         """
         Student-TODO: Best/Worst Case
         """
-        # Sort lands by gold-to-guardians ratio in descending order
-        sorted_lands = sorted(self.sites, key=lambda land: (land.gold / land.guardians), reverse=True)
+        max_heap = MaxHeap(len(self.sites))  # Initialize the max heap with the number of land sites
+        
+        # Insert lands into the max heap based on the gold-to-guardians ratio
+        for land in self.sites:
+            if land.guardians > 0:
+                ratio = land.gold / land.guardians
+            else:
+                ratio = float('inf')  # If no guardians, prioritize this land
+            max_heap.insert((ratio, land))
 
         selected_sites = []
         remaining_adventurers = self.adventurers
 
-        # Allocate adventurers to each land
-        for land in sorted_lands:
-            if remaining_adventurers <= 0:
-                break
-            
+        # Extract from max heap and allocate adventurers
+        while remaining_adventurers > 0 and not max_heap.is_empty():
+            ratio, land = max_heap.extract_max()
             if land.guardians == 0:
-                # If there are no guardians, we can collect all gold without sending adventurers
                 selected_sites.append((land, 0))
                 continue
 
-            # Calculate the maximum adventurers needed to match guardians
             needed_adventurers = min(land.guardians, remaining_adventurers)
-
-            # Calculate the reward for sending the adventurers
-            reward = min((needed_adventurers * land.gold) / land.guardians, land.gold)
-
-            # Add to selected sites
             selected_sites.append((land, needed_adventurers))
-
-            # Reduce the remaining adventurers
             remaining_adventurers -= needed_adventurers
 
         return selected_sites
