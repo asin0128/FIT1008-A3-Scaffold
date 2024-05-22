@@ -41,6 +41,7 @@ class Land:
     name: str
     gold: float
     guardians: int
+    remaining: int = 0
 
     @classmethod
     def random(cls):
@@ -64,3 +65,26 @@ class Land:
 
     def set_guardians(self, new_guardians: int) -> None:
         self.guardians = new_guardians
+
+        
+
+    def calc_score(self) -> float:
+        return 2.5 * self.remaining + min((self.remaining * self.get_gold()) / self.get_guardians(), self.get_gold())
+
+    def __gt__(self, other) -> bool:
+        return self.calc_score() > other.calc_score()
+    
+    def __lt__(self, other) -> bool:
+        return self.calc_score() < other.calc_score()
+    
+    def __eq__(self, other) -> bool:
+        return self.calc_score() == other.calc_score()
+    
+    def __ne__(self, other) -> bool:
+        return self.calc_score() != other.calc_score()
+    
+    def __ge__(self, other) -> bool:
+        return self.calc_score() >= other.calc_score()
+    
+    def __le__(self, other) -> bool:
+        return self.calc_score() <= other.calc_score()
