@@ -14,14 +14,21 @@ class Mode1Navigator:
         """
         Student-TODO: Best/Worst Case
         """
-        self.sites = BinarySearchTree()
-        sites = mergesort(sites, key = lambda x: x.get_gold()/x.get_guardians())
-        self.adventurers = adventurers
+        # self.sites = BinarySearchTree()
+        # sites = mergesort(sites, key = lambda x: x.get_gold()/x.get_guardians())
+        # self.adventurers = adventurers
 
-        for land in sites:
-            self.sites[(land.get_gold() / land.get_guardians())] = land
-        self.size = len(sites)
-        self.remaining = self.adventurers
+        # for land in sites:
+        #     self.sites[(land.get_gold() / land.get_guardians())] = land
+        # self.size = len(sites)
+        # self.remaining = self.adventurers
+
+        self.sites = sites
+        heap_obj = MaxHeap(len(self.sites))
+        for i in self.sites:
+            MaxHeap.add(i)
+
+
 
     def select_sites(self) -> list[tuple[Land, int]]:
         """
@@ -29,18 +36,18 @@ class Mode1Navigator:
         """
         result = []
 
-        for i in BSTPostOrderIterator(self.sites.root):
-            island = island.item
-            if self.remaining >= island.get_guardians():
-                self.remaining -= island.get_guardians()
-                result.append((island, island.get_guardians()))
-            else:
-                result.append((island, self.remaining))
-                self.remaining = self.adventurers
-                break
+        # for i in BSTPostOrderIterator(self.sites.root):
+        #     island = island.item
+        #     if self.remaining >= island.get_guardians():
+        #         self.remaining -= island.get_guardians()
+        #         result.append((island, island.get_guardians()))
+        #     else:
+        #         result.append((island, self.remaining))
+        #         self.remaining = self.adventurers
+        #         break
 
-        self.remaining = self.adventurers
-        return result
+        # self.remaining = self.adventurers
+        # return result
 
     def select_sites_from_adventure_numbers(self, adventure_numbers: list[int]) -> list[float]:
         """
@@ -53,3 +60,6 @@ class Mode1Navigator:
         Student-TODO: Best/Worst Case
         """
         raise NotImplementedError()
+
+x = Mode1Navigator.__init__
+print(x)
