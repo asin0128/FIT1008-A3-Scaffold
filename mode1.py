@@ -25,9 +25,16 @@ class Mode1Navigator:
 
         self.sites = sites
         heap_obj = MaxHeap(len(self.sites))
-        for i in self.sites:
-            MaxHeap.add(i)
 
+        for island in sites:
+            ratio = island.get_gold()
+            print(ratio)
+        for i in self.sites:
+            heap_obj.add(i)
+        best_island1 = heap_obj.get_max()
+        best_island2 = heap_obj.get_max()
+        best_island3 = heap_obj.get_max()
+        print(best_island1, best_island2, best_island3)
 
 
     def select_sites(self) -> list[tuple[Land, int]]:
