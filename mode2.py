@@ -35,6 +35,13 @@ class Mode2Navigator:
             self.crew.append(adventurer_size)
         print(self.crew)
 
+        for invader in self.invaders:
+            while invader[0] > 0:
+                optimal_island = self.tree.get_max
+                if invader[0] >= optimal_island.get_guardians():
+                    invader[0] >= optimal_island.get_guardians()
+
+
 if __name__ == '__main__':
     dt = Mode2Navigator(4)
     A = Land("A", 400, 100)

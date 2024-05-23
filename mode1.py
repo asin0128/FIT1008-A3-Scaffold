@@ -1,5 +1,7 @@
 from landsites import Land
+from data_structures.bst import BinarySearchTree, BSTPostOrderIterator
 from data_structures.heap import MaxHeap
+from algorithms import mergesort
 from typing import List, Tuple
 
 class Mode1Navigator:
@@ -12,38 +14,33 @@ class Mode1Navigator:
         """
         Student-TODO: Best/Worst Case
         """
-        self.sites = sites
+        self.sites = BinarySearchTree()
+        sites = mergesort(sites, key = lambda x: x.get_gold()/x.get_guardians())
         self.adventurers = adventurers
+
+        for land in sites:
+            self.sites[(land.get_gold() / land.get_guardians())] = land
+        self.size = len(sites)
+        self.remaining = self.adventurers
 
     def select_sites(self) -> list[tuple[Land, int]]:
         """
         Student-TODO: Best/Worst Case
         """
-        max_heap = MaxHeap(len(self.sites))  # Initialize the max heap with the number of land sites
-        
-        # Insert lands into the max heap based on the gold-to-guardians ratio
-        for land in self.sites:
-            if land.guardians > 0:
-                ratio = land.gold / land.guardians
+        result = []
+
+        for i in BSTPostOrderIterator(self.sites.root):
+            island = island.item
+            if self.remaining >= island.get_guardians():
+                self.remaining -= island.get_guardians()
+                result.append((island, island.get_guardians()))
             else:
-                ratio = float('inf')  # If no guardians, prioritize this land
-            max_heap.insert((ratio, land))
+                result.append((island, self.remaining))
+                self.remaining = self.adventurers
+                break
 
-        selected_sites = []
-        remaining_adventurers = self.adventurers
-
-        # Extract from max heap and allocate adventurers
-        while remaining_adventurers > 0 and not max_heap.is_empty():
-            ratio, land = max_heap.extract_max()
-            if land.guardians == 0:
-                selected_sites.append((land, 0))
-                continue
-
-            needed_adventurers = min(land.guardians, remaining_adventurers)
-            selected_sites.append((land, needed_adventurers))
-            remaining_adventurers -= needed_adventurers
-
-        return selected_sites
+        self.remaining = self.adventurers
+        return result
 
     def select_sites_from_adventure_numbers(self, adventure_numbers: list[int]) -> list[float]:
         """
