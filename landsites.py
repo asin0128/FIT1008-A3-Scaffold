@@ -41,8 +41,12 @@ class Land:
     name: str
     gold: float
     guardians: int
-    remaining: int = 0
-    total: int = 0
+
+    def __post_init__(self):
+        self.ratio = self.gold / self.guardians if self.guardians != 0 else float('inf')
+
+    def get_ratio(self) -> float:
+        return self.ratio
 
     @classmethod
     def random(cls):
@@ -65,35 +69,9 @@ class Land:
         self.gold = new_gold
 
     def set_guardians(self, new_guardians: int) -> None:
-        self.guardians = new_guardians
+        self.guardians = new_guardians 
 
-    def set_remaining(self, num_adventurers: int) -> None:
-        self.remaining = max(num_adventurers - self.get_guardians(), 0)
-        self.total = num_adventurers        
+    def get_ratio(self):
+        return self.gold/self.guardians
 
-    def calc_score(self) -> float:
-        if self.get_guardians() != 0:
-            if (self.total - self.remaining) < self.get_guardians():
-                return 2.5 * self.remaining + min(((self.total - self.get_guardians()) * self.get_gold()) / self.get_guardians(), self.get_gold())
-            else:
-                return 2.5 * self.remaining + min((self.get_guardians()  * self.get_gold()) / self.get_guardians(), self.get_gold())
-        else:
-            return 2.5 * self.remaining + self.get_gold()
-
-    def __gt__(self, other) -> bool:
-        return self.calc_score() > other.calc_score()
     
-    def __lt__(self, other) -> bool:
-        return self.calc_score() < other.calc_score()
-    
-    def __eq__(self, other) -> bool:
-        return self.calc_score() == other.calc_score()
-    
-    def __ne__(self, other) -> bool:
-        return self.calc_score() != other.calc_score()
-    
-    def __ge__(self, other) -> bool:
-        return self.calc_score() >= other.calc_score()
-    
-    def __le__(self, other) -> bool:
-        return self.calc_score() <= other.calc_score()

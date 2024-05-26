@@ -1,5 +1,7 @@
 from landsites import Land
 from data_structures.heap import MaxHeap
+from data_structures.referential_array import ArrayR
+from typing import List, Tuple, Union
 
 
 
@@ -10,36 +12,65 @@ class Mode2Navigator:
     """
 
     def __init__(self, n_teams: int) -> None:
-        """
-        Student-TODO: Best/Worst Case
-        """
-        self.invaders = n_teams
-        self.islands = [] #stores all islands
-        self.tree = None
-        self.crew = [] #invader size after attack
+        self.num_teams = n_teams
+        self.sites = []
 
-    def add_sites(self, sites: list[Land]) -> None:
-        """
-        Student-TODO: Best/Worst Case
-        """
-        self.islands.extend(sites)
+    def add_sites(self, sites: List[Land]) -> None:
+        if not self.sites:
+            self.sites = sites
+        else:
+            self.sites.extend(sites)
 
-    def simulate_day(self, adventurer_size: int) -> list[tuple[Land | None, int]]:
-        """
-        Student-TODO: Best/Worst Case
-        """
+    def compute_score(self, site: Land, adventurers: int) -> Tuple[float, float, int]:
+        if site.guardians == 0:
+            reward = site.gold
+        else:
+            reward = min((adventurers * site.gold) / site.guardians, site.gold)
+        remaining_adventurers = adventurers - site.guardians if adventurers >= site.guardians else 0
+        score = 2.5 * remaining_adventurers + reward
+        return score, reward, remaining_adventurers
 
-        result_tree = [] # -> list[tuple[Land | None, int]]: thing above
-        self.tree = MaxHeap.heapify(self.islands)
-        for i in range(self.invaders):
-            self.crew.append(adventurer_size)
-        print(self.crew)
+    def construct_score_data_structure(self, adventurers: int) -> MaxHeap:
+        score_heap = MaxHeap(len(self.sites))
+        for site in self.sites:
+            score, reward, remaining_adventurers = self.compute_score(site, adventurers)
+            score_heap.add((score, site, reward, remaining_adventurers))
+        return score_heap
 
-        for invader in self.invaders:
-            while invader[0] > 0:
-                optimal_island = self.tree.get_max
-                if invader[0] >= optimal_island.get_guardians():
-                    invader[0] >= optimal_island.get_guardians()
+    def simulate_day(self, adventurer_size: int) -> List[Tuple[Union[Land, None], int]]:
+        return_list = []
+        score_heap = self.construct_score_data_structure(adventurer_size)
+
+        for _ in range(self.num_teams):
+            if len(score_heap) == 0:
+                return_list.append((None, 0))
+                continue
+
+            score, site, reward, remaining_adventurers = score_heap.get_max()
+            if site.get_gold() > 0:
+                sent = min(site.get_guardians(), adventurer_size)
+                site.set_gold(site.get_gold() - reward)
+                site.set_guardians(max(site.get_guardians() - adventurer_size, 0))
+                return_list.append((site, sent))
+            else:
+                return_list.append((None, 0))
+
+            # Update the heap with the modified site
+            self.update_heap(score_heap, adventurer_size)
+
+        return return_list
+
+    def update_heap(self, score_heap: MaxHeap, adventurer_size: int) -> None:
+        updated_heap = MaxHeap(len(self.sites))
+        for i in range(1, len(score_heap.the_array)):
+            if score_heap.the_array[i] is not None:
+                _, site, _, _ = score_heap.the_array[i]
+                if site.get_gold() > 0:
+                    score, reward, remaining_adventurers = self.compute_score(site, adventurer_size)
+                    updated_heap.add((score, site, reward, remaining_adventurers))
+        score_heap.the_array = updated_heap.the_array
+        score_heap.length = updated_heap.length
+
 
 
 if __name__ == '__main__':
